@@ -20,8 +20,12 @@
   "entrypoints": {
     "main": [
       "arathain.bab.BloodAndBone"
+    ],
+    "client": [
+      "arathain.bab.BloodAndBoneClient"
     ]
   },
+  "accessWidener" : "bab.accesswidener",
   "mixins": [
     "bloodandbone.mixins.json"
   ],

@@ -3,6 +3,10 @@ package arathain.bab.client.anim.util;
 import net.minecraft.util.math.*;
 import software.bernie.geckolib3.core.processor.IBone;
 
+/**
+ * Taken from https://github.com/BobMowzie/MowziesMobs/blob/master/src/main/java/com/bobmowzie/mowziesmobs/client/model/tools/RigUtils.java
+ * **/
+
 public class RigUtils {
     public static Vec3d lerp(Vec3d v, Vec3d u, float alpha) {
         return new Vec3d(
@@ -197,32 +201,32 @@ public class RigUtils {
         {
             double S = Math.sqrt(tr+1.0) * 2; // S=4*qw
             qw = 0.25 * S;
-            qx = (matrix.m21 - matrix.m12) / S;
-            qy = (matrix.m02 - matrix.m20) / S;
-            qz = (matrix.m10 - matrix.m01) / S;
+            qx = (matrix.a21 - matrix.a12) / S;
+            qy = (matrix.a02 - matrix.a20) / S;
+            qz = (matrix.a10 - matrix.a01) / S;
         }
-        else if ((matrix.m00 > matrix.m11) & (matrix.m00 > matrix.m22))
+        else if ((matrix.a00 > matrix.a11) & (matrix.a00 > matrix.a22))
         {
-            double S = Math.sqrt(1.0 + matrix.m00 - matrix.m11 - matrix.m22) * 2; // S=4*qx
-            qw = (matrix.m21 - matrix.m12) / S;
+            double S = Math.sqrt(1.0 + matrix.a00 - matrix.a11 - matrix.a22) * 2; // S=4*qx
+            qw = (matrix.a21 - matrix.a12) / S;
             qx = 0.25 * S;
-            qy = (matrix.m01 + matrix.m10) / S;
-            qz = (matrix.m02 + matrix.m20) / S;
+            qy = (matrix.a01 + matrix.a10) / S;
+            qz = (matrix.a02 + matrix.a20) / S;
         }
-        else if (matrix.m11 > matrix.m22)
+        else if (matrix.a11 > matrix.a22)
         {
-            double S = Math.sqrt(1.0 + matrix.m11 - matrix.m00 - matrix.m22) * 2; // S=4*qy
-            qw = (matrix.m02 - matrix.m20) / S;
-            qx = (matrix.m01 + matrix.m10) / S;
+            double S = Math.sqrt(1.0 + matrix.a11 - matrix.a00 - matrix.a22) * 2; // S=4*qy
+            qw = (matrix.a02 - matrix.a20) / S;
+            qx = (matrix.a01 + matrix.a10) / S;
             qy = 0.25 * S;
-            qz = (matrix.m12 + matrix.m21) / S;
+            qz = (matrix.a12 + matrix.a21) / S;
         }
         else
         {
-            double S = Math.sqrt(1.0 + matrix.m22 - matrix.m00 - matrix.m11) * 2; // S=4*qz
-            qw = (matrix.m10 - matrix.m01) / S;
-            qx = (matrix.m02 + matrix.m20) / S;
-            qy = (matrix.m12 + matrix.m21) / S;
+            double S = Math.sqrt(1.0 + matrix.a22 - matrix.a00 - matrix.a11) * 2; // S=4*qz
+            qw = (matrix.a10 - matrix.a01) / S;
+            qx = (matrix.a02 + matrix.a20) / S;
+            qy = (matrix.a12 + matrix.a21) / S;
             qz = 0.25 * S;
         }
 
@@ -231,22 +235,22 @@ public class RigUtils {
 
     public static void removeMatrixRotation(Matrix4f matrix)
     {
-        matrix.m00 = 1;
-        matrix.m11 = 1;
-        matrix.m22 = 1;
-        matrix.m01 = 0;
-        matrix.m02 = 0;
-        matrix.m10 = 0;
-        matrix.m12 = 0;
-        matrix.m20 = 0;
-        matrix.m21 = 0;
+        matrix.a00 = 1;
+        matrix.a11 = 1;
+        matrix.a22 = 1;
+        matrix.a01 = 0;
+        matrix.a02 = 0;
+        matrix.a10 = 0;
+        matrix.a12 = 0;
+        matrix.a20 = 0;
+        matrix.a21 = 0;
     }
 
     public static void removeMatrixTranslation(Matrix4f matrix)
     {
-        matrix.m03 = 0;
-        matrix.m13 = 0;
-        matrix.m23 = 0;
+        matrix.a03 = 0;
+        matrix.a13 = 0;
+        matrix.a23 = 0;
     }
 
     public static Quaternion betweenVectors(Vec3d u, Vec3d v) {
@@ -258,7 +262,7 @@ public class RigUtils {
     }
 
     public static Vec3f translationFromMatrix(Matrix4f matrix4f) {
-        return new Vec3f(matrix4f.m03, matrix4f.m13, matrix4f.m23);
+        return new Vec3f(matrix4f.a03, matrix4f.a13, matrix4f.a23);
     }
 
     public static Vec3f eulerAnglesZYXFromMatrix(Matrix4f matrix4f) {
@@ -266,21 +270,21 @@ public class RigUtils {
         float thetaZ;
         float thetaY;
         float thetaX;
-        if (matrix4f.m20 < 1f) {
-            if (matrix4f.m20 > -1f) {
-                thetaY = (float) Math.asin(-matrix4f.m20);
-                thetaZ = (float) Math.atan2(matrix4f.m10, matrix4f.m00) ;
-                thetaX = (float) Math.atan2(matrix4f.m21, matrix4f.m22);
+        if (matrix4f.a20 < 1f) {
+            if (matrix4f.a20 > -1f) {
+                thetaY = (float) Math.asin(-matrix4f.a20);
+                thetaZ = (float) Math.atan2(matrix4f.a10, matrix4f.a00) ;
+                thetaX = (float) Math.atan2(matrix4f.a21, matrix4f.a22);
             }
             else { // m20 = −1
                 thetaY = (float) (Math.PI / 2f);
-                thetaZ = -(float) Math.atan2(-matrix4f.m12, matrix4f.m11);
+                thetaZ = -(float) Math.atan2(-matrix4f.a12, matrix4f.a11);
                 thetaX = 0;
             }
         }
         else { // m20 = +1
             thetaY = -(float) (Math.PI / 2f);
-            thetaZ = (float) Math.atan2(-matrix4f.m12, matrix4f.m11);
+            thetaZ = (float) Math.atan2(-matrix4f.a12, matrix4f.a11);
             thetaX = 0;
         }
         return new Vec3f(thetaX, thetaY, thetaZ);
@@ -291,21 +295,21 @@ public class RigUtils {
         float thetaZ;
         float thetaY;
         float thetaX;
-        if (matrix4f.m20 < 1f) {
-            if (matrix4f.m20 > -1f) {
-                thetaY = (float) Math.asin(matrix4f.m02);
-                thetaX = (float) Math.atan2(-matrix4f.m12, matrix4f.m22) ;
-                thetaZ = (float) Math.atan2(-matrix4f.m01, matrix4f.m00);
+        if (matrix4f.a20 < 1f) {
+            if (matrix4f.a20 > -1f) {
+                thetaY = (float) Math.asin(matrix4f.a02);
+                thetaX = (float) Math.atan2(-matrix4f.a12, matrix4f.a22) ;
+                thetaZ = (float) Math.atan2(-matrix4f.a01, matrix4f.a00);
             }
             else { // m20 = −1
                 thetaY = -(float) (Math.PI / 2f);
-                thetaX = -(float) Math.atan2(matrix4f.m10, matrix4f.m11);
+                thetaX = -(float) Math.atan2(matrix4f.a10, matrix4f.a11);
                 thetaZ = 0;
             }
         }
         else { // m20 = +1
             thetaY = (float) (Math.PI / 2f);
-            thetaX = (float) Math.atan2(matrix4f.m10, matrix4f.m11);
+            thetaX = (float) Math.atan2(matrix4f.a10, matrix4f.a11);
             thetaZ = 0;
         }
         return new Vec3f(thetaX, thetaY, thetaZ);
