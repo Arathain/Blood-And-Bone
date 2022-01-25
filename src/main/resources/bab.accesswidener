@@ -35,3 +35,7 @@ accessible field net/minecraft/util/math/Matrix4f a33 F
 
 accessible method net/minecraft/client/render/entity/feature/ShoulderParrotFeatureRenderer renderShoulderParrot (Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/entity/player/PlayerEntity;FFFFZ)V
 
+# Player
+
+accessible field net/minecraft/client/render/entity/model/PlayerEntityModel ear Lnet/minecraft/client/model/ModelPart;
+accessible field net/minecraft/client/render/entity/model/PlayerEntityModel cloak Lnet/minecraft/client/model/ModelPart;

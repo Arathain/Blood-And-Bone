@@ -5,13 +5,14 @@ import arathain.bab.client.anim.util.BABBone;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class GeckoLibParrotVariantFeatureRenderer extends ShoulderParrotFeatureRenderer<AbstractClientPlayerEntity> implements IGeckoLibRenderLayer {
     private final GeckoLibPlayerRenderer renderPlayerAnimated;
 
-    public GeckoLibParrotVariantFeatureRenderer(GeckoLibPlayerRenderer rendererIn) {
-        super(rendererIn);
+    public GeckoLibParrotVariantFeatureRenderer(GeckoLibPlayerRenderer rendererIn,  EntityModelLoader loader) {
+        super(rendererIn, loader);
         //how does this even work
         renderPlayerAnimated = rendererIn;
     }

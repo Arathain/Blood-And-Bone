@@ -1,6 +1,7 @@
 package arathain.bab.client.anim.player;
 
 import arathain.bab.client.anim.player.model.GeckoLibPlayerThirdPersonModel;
+import arathain.bab.client.anim.player.render.GeckoLibParrotVariantFeatureRenderer;
 import arathain.bab.client.anim.player.render.IGeckoLibRenderLayer;
 import arathain.bab.client.anim.util.BABBone;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -35,23 +36,23 @@ public class GeckoLibPlayerRenderer extends PlayerEntityRenderer implements IGeo
 
     public Vec3d betweenHandsPos;
 
-    public GeckoLibPlayerRenderer(EntityRendererFactory.Context renderManager, GeckoLibPlayerThirdPersonModel modelProvider) {
-        super(renderManager, false);
+    public GeckoLibPlayerRenderer(EntityRendererFactory.Context ctx, GeckoLibPlayerThirdPersonModel modelProvider) {
+        super(ctx, false);
 
-        this.entityModel = new ModelPlayerAnimated<>(0.0f, false);
+        this.model = new ModelPlayerAnimated<>(0.0f, false);
 
-        this.layerRenderers.clear();
+        this.features.clear();
         this.addFeature(new BipedEntityArmorLayer<>(this, new ModelBipedAnimated<>(0.5F), new ModelBipedAnimated<>(1.0F)));
-        this.addLayer(new GeckoHeldItemLayer(this));
-        this.addLayer(new ArrowLayer<>(this));
-        this.addLayer(new Deadmau5HeadLayer(this));
-        this.addLayer(new GeckoCapeLayer(this));
-        this.addLayer(new HeadLayer<>(this));
-        this.addLayer(new GeckoElytraLayer<>(this, this.entityModel.bipedBody));
-        this.addLayer(new GeckoParrotVariantLayer(this));
-        this.addLayer(new SpinAttackEffectLayer<>(this));
-        this.addLayer(new BeeStingerLayer<>(this));
-        this.addLayer(new FrozenRenderHandler.LayerFrozen<>(this));
+        this.addFeature(new GeckoHeldItemLayer(this));
+        this.addFeature(new ArrowLayer<>(this));
+        this.addFeature(new Deadmau5HeadLayer(this));
+        this.addFeature(new GeckoCapeLayer(this));
+        this.addFeature(new HeadLayer<>(this));
+        this.addFeature(new GeckoElytraLayer<>(this, this.entityModel.bipedBody));
+        this.addFeature(new GeckoLibParrotVariantFeatureRenderer(this, ctx.getModelLoader()));
+        this.addFeature(new SpinAttackEffectLayer<>(this));
+        this.addFeature(new BeeStingerLayer<>(this));
+        this.addFeature(new FrozenRenderHandler.LayerFrozen<>(this));
 
         this.modelProvider = modelProvider;
 
