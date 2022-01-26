@@ -1,20 +1,26 @@
 package arathain.bab.client.anim.player;
 
+import arathain.bab.client.anim.player.model.AnimatedPlayerModel;
 import arathain.bab.client.anim.player.model.GeckoLibPlayerThirdPersonModel;
 import arathain.bab.client.anim.player.render.GeckoLibParrotVariantFeatureRenderer;
 import arathain.bab.client.anim.player.render.IGeckoLibRenderLayer;
 import arathain.bab.client.anim.util.BABBone;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
+import net.minecraft.client.render.entity.model.Bipedmodel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.render.entity.model.Playermodel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.IAnimatableModel;
+import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoCube;
 import software.bernie.geckolib3.model.provider.GeoModelProvider;
@@ -48,7 +54,7 @@ public class GeckoLibPlayerRenderer extends PlayerEntityRenderer implements IGeo
         this.addFeature(new Deadmau5HeadLayer(this));
         this.addFeature(new GeckoCapeLayer(this));
         this.addFeature(new HeadLayer<>(this));
-        this.addFeature(new GeckoElytraLayer<>(this, this.entityModel.bipedBody));
+        this.addFeature(new GeckoElytraLayer<>(this, this.model.bipedBody));
         this.addFeature(new GeckoLibParrotVariantFeatureRenderer(this, ctx.getModelLoader()));
         this.addFeature(new SpinAttackEffectLayer<>(this));
         this.addFeature(new BeeStingerLayer<>(this));
@@ -62,8 +68,8 @@ public class GeckoLibPlayerRenderer extends PlayerEntityRenderer implements IGeo
 
     static {
         AnimationController.addModelFetcher((IAnimatable object) -> {
-            if (object instanceof GeckoPlayer.GeckoPlayerThirdPerson) {
-                GeckoRenderPlayer render = modelsToLoad.get(object.getClass());
+            if (object instanceof GeckoLibPlayer.GeckoPlayerThirdPerson) {
+                GeckoLibPlayerRenderer render = modelsToLoad.get(object.getClass());
                 return (IAnimatableModel<Object>) render.getGeoModelProvider();
             } else {
                 return null;
@@ -71,26 +77,27 @@ public class GeckoLibPlayerRenderer extends PlayerEntityRenderer implements IGeo
         });
     }
 
-    public GeckoRenderPlayer getModelProvider(Class<? extends GeckoPlayer> animatable) {
+    public GeckoLibPlayerRenderer getModelProvider(Class<? extends GeckoLibPlayer> animatable) {
         return modelsToLoad.get(animatable);
     }
 
-    public HashMap<Class<? extends GeckoPlayer>, GeckoRenderPlayer> getModelsToLoad() {
+    public HashMap<Class<? extends GeckoLibPlayer>, GeckoLibPlayerRenderer> getModelsToLoad() {
         return modelsToLoad;
     }
 
     public void setSmallArms() {
-        this.entityModel = new ModelPlayerAnimated<>(0.0f, true);
+        this.model = new AnimatedPlayerModel<>(0.0f, true);
         this.modelProvider.setUseSmallArms(true);
     }
 
-    public void render(AbstractClientPlayer entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, GeckoPlayer geckoPlayer) {
-        this.setModelVisibilities(entityIn);
-        renderLiving(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn, geckoPlayer);
+    @Override
+    public void render(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+        this.setModelVisibilities(abstractClientPlayerEntity);
+        renderLiving(abstractClientPlayerEntity, f, g, matrixStack, vertexConsumerProvider, i, geckoPlayer);
     }
 
-    private void setModelVisibilities(AbstractClientPlayer clientPlayer) {
-        ModelGeckoPlayerThirdPerson playermodel = (ModelGeckoPlayerThirdPerson) getGeoModelProvider();
+    private void setModelVisibilities(AbstractClientPlayerEntity clientPlayer) {
+        GeckoLibPlayerThirdPersonModel playermodel = (GeckoLibPlayerThirdPersonModel) getGeoModelProvider();
         if (playermodel.isInitialized()) {
             if (clientPlayer.isSpectator()) {
                 playermodel.setVisible(false);
@@ -105,8 +112,8 @@ public class GeckoLibPlayerRenderer extends PlayerEntityRenderer implements IGeo
                 playermodel.bipedLeftArmwear().setHidden(!clientPlayer.isWearing(PlayerModelPart.LEFT_SLEEVE));
                 playermodel.bipedRightArmwear().setHidden(!clientPlayer.isWearing(PlayerModelPart.RIGHT_SLEEVE));
                 playermodel.isSneak = clientPlayer.isCrouching();
-                BipedModel.ArmPose bipedmodel$armpose = func_241741_a_(clientPlayer, Hand.MAIN_HAND);
-                BipedModel.ArmPose bipedmodel$armpose1 = func_241741_a_(clientPlayer, Hand.OFF_HAND);
+                Bipedmodel.ArmPose bipedmodel$armpose = func_241741_a_(clientPlayer, Hand.MAIN_HAND);
+                Bipedmodel.ArmPose bipedmodel$armpose1 = func_241741_a_(clientPlayer, Hand.OFF_HAND);
                 if (bipedmodel$armpose.func_241657_a_()) {
                     bipedmodel$armpose1 = clientPlayer.getHeldItemOffhand().isEmpty() ? BipedModel.ArmPose.EMPTY : BipedModel.ArmPose.ITEM;
                 }
@@ -122,20 +129,19 @@ public class GeckoLibPlayerRenderer extends PlayerEntityRenderer implements IGeo
         }
     }
 
-    public void renderLiving(AbstractClientPlayer entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, GeckoPlayer geckoPlayer) {
+    public void renderLiving(AbstractClientPlayerEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, GeckoPlayer geckoPlayer) {
         if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>(entityIn, this, partialTicks, matrixStackIn, bufferIn, packedLightIn))) return;
         matrixStackIn.push();
-        this.entityModel.swingProgress = this.getSwingProgress(entityIn, partialTicks);
+        this.model.swingProgress = this.getSwingProgress(entityIn, partialTicks);
 
         boolean shouldSit = entityIn.isPassenger() && (entityIn.getRidingEntity() != null && entityIn.getRidingEntity().shouldRiderSit());
-        this.entityModel.isSitting = shouldSit;
-        this.entityModel.isChild = entityIn.isChild();
-        float f = MathHelper.interpolateAngle(partialTicks, entityIn.prevRenderYawOffset, entityIn.renderYawOffset);
-        float f1 = MathHelper.interpolateAngle(partialTicks, entityIn.yHeadRot0, entityIn.getYRot()Head);
+        this.model.isSitting = shouldSit;
+        this.model.isChild = entityIn.isChild();
+        float f = MathHelper.lerpAngle(partialTicks, entityIn.prevRenderYawOffset, entityIn.renderYawOffset);
+        float f1 = MathHelper.lerpAngle(partialTicks, entityIn.yHeadRot0, entityIn.getYRot()Head);
         float f2 = f1 - f;
-        if (shouldSit && entityIn.getRidingEntity() instanceof LivingEntity) {
-            LivingEntity livingentity = (LivingEntity)entityIn.getRidingEntity();
-            f = MathHelper.interpolateAngle(partialTicks, livingentity.prevRenderYawOffset, livingentity.renderYawOffset);
+        if (shouldSit && entityIn.getVehicle() instanceof LivingEntity livingentity) {
+            f = MathHelper.lerpAngle(partialTicks, livingentity.prevRenderYawOffset, livingentity.renderYawOffset);
             f2 = f1 - f;
             float f3 = MathHelper.wrapDegrees(f2);
             if (f3 < -85.0F) {
@@ -179,24 +185,25 @@ public class GeckoLibPlayerRenderer extends PlayerEntityRenderer implements IGeo
             }
         }
 
-        this.modelProvider.setLivingAnimations(geckoPlayer, entityIn.getUniqueID().hashCode());
+        this.modelProvider.setLivingAnimations(geckoPlayer, entityIn.getUuid().hashCode());
         if (this.modelProvider.isInitialized()) {
             this.applyRotationsPlayerRenderer(entityIn, matrixStackIn, f7, f, partialTicks, f1);
             float bodyRotateAmount = this.modelProvider.getControllerValue("BodyRotateController");
-            this.modelProvider.setRotationAngles(entityIn, f5, f8, f7, MathHelper.interpolateAngle(bodyRotateAmount, 0, f2), f6, partialTicks);
+            this.modelProvider.setRotationAngles(entityIn, f5, f8, f7, MathHelper.lerpAngle(bodyRotateAmount, 0, f2), f6, partialTicks);
 
-            MowzieGeoBone leftHeldItem = modelProvider.getMowzieBone("LeftHeldItem");
-            MowzieGeoBone rightHeldItem = modelProvider.getMowzieBone("RightHeldItem");
+            BABBone leftHeldItem = modelProvider.getBABBone("LeftHeldItem");
+            BABBone rightHeldItem = modelProvider.getBABBone("RightHeldItem");
 
-            Matrix4f worldMatInverted = matrixStackIn.getLast().getMatrix().copy();
+            Matrix4f worldMatInverted = matrixStackIn.peek().getPositionMatrix().copy();
             worldMatInverted.invert();
-            Matrix3f worldNormInverted = matrixStackIn.getLast().getNormal().copy();
+            Matrix3f worldNormInverted = matrixStackIn.peek().getNormalMatrix().copy();
             worldNormInverted.invert();
             MatrixStack toWorldSpace = new MatrixStack();
-            toWorldSpace.rotate(new Quaternion(0, -entityYaw + 180, 0, true));
+            toWorldSpace.multiply(new Quaternion(0, -entityYaw + 180, 0, true));
             toWorldSpace.translate(0, -1.5f, 0);
-            toWorldSpace.getLast().getNormal().mul(worldNormInverted);
-            toWorldSpace.getLast().getMatrix().mul(worldMatInverted);
+            toWorldSpace.peek().getNormalMatrix().multiply(worldNormInverted);
+            toWorldSpace.peek().getPositionMatrix().multiply(worldMatInverted);
+
 
             Vector4f leftHeldItemPos = new Vector4f(0, 0, 0, 1);
             leftHeldItemPos.transform(leftHeldItem.getWorldSpaceXform());
@@ -225,8 +232,8 @@ public class GeckoLibPlayerRenderer extends PlayerEntityRenderer implements IGeo
                     geckoPlayer, partialTicks, rendertype, matrixStackIn, bufferIn, ivertexbuilder, packedLightIn, i, 1.0F, 1.0F, 1.0F, flag1 ? 0.15F : 1.0F
             );
             matrixStackIn.pop();
-            this.entityModel.setRotationAngles(entityIn, f5, f8, f7, f2, f6);
-            ModelBipedAnimated.copyFromGeckoModel(this.entityModel, this.modelProvider);
+            this.model.setRotationAngles(entityIn, f5, f8, f7, f2, f6);
+            ModelBipedAnimated.copyFromGeckoModel(this.model, this.modelProvider);
         }
 
         if (!entityIn.isSpectator()) {

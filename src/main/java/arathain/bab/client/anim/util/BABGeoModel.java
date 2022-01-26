@@ -58,7 +58,8 @@ public abstract class BABGeoModel <T extends IAnimatable & IAnimationTickable> e
         predicate.animationTick = seekTime;
         getAnimationProcessor().preAnimationSetup(predicate.getAnimatable(), seekTime);
         if (!this.getAnimationProcessor().getModelRendererList().isEmpty()) {
-            //TODO make this run   getAnimationProcessor().tickAnimation(entity, uniqueID, seekTime, predicate, (MolangParser) GeckoLibCache.getInstance().parser, shouldCrashOnMissing);
+            //TODO make this work
+            getAnimationProcessor().tickAnimation(entity, uniqueID, seekTime, predicate, GeckoLibCache.getInstance().parser, shouldCrashOnMissing);
         }
 
         if (!MinecraftClient.getInstance().isPaused() || manager.shouldPlayWhilePaused) {

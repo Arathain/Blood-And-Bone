@@ -8,7 +8,7 @@ import software.bernie.geckolib3.geo.render.built.GeoBone;
 
 
 /**
- * https://github.com/BobMowzie/MowziesMobs/blob/master/src/main/java/com/bobmowzie/mowziesmobs/client/model/tools/geckolib/MowzieGeoBone.java
+ * https://github.com/BobMowzie/MowziesMobs/blob/master/src/main/java/com/bobmowzie/mowziesmobs/client/model/tools/geckolib/BABBone.java
  * **/
 public class BABBone extends GeoBone {
     private Matrix4f modelSpaceXform;

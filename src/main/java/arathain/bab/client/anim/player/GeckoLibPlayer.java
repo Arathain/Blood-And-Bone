@@ -2,6 +2,7 @@ package arathain.bab.client.anim.player;
 
 import arathain.bab.client.anim.player.model.GeckoLibPlayerFirstPersonModel;
 import arathain.bab.client.anim.player.model.GeckoLibPlayerThirdPersonModel;
+import arathain.bab.client.anim.player.render.GeckoLibFirstPersonRenderer;
 import arathain.bab.client.anim.util.BABAnimationController;
 import arathain.bab.client.anim.util.BABGeoModel;
 import net.fabricmc.api.EnvType;

@@ -39,3 +39,5 @@ accessible method net/minecraft/client/render/entity/feature/ShoulderParrotFeatu
 
 accessible field net/minecraft/client/render/entity/model/PlayerEntityModel ear Lnet/minecraft/client/model/ModelPart;
 accessible field net/minecraft/client/render/entity/model/PlayerEntityModel cloak Lnet/minecraft/client/model/ModelPart;
+extendable method net/minecraft/client/render/item/HeldItemRenderer renderFirstPersonItem (Lnet/minecraft/client/network/AbstractClientPlayerEntity;FFLnet/minecraft/util/Hand;FLnet/minecraft/item/ItemStack;FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V
+accessible method net/minecraft/client/render/item/HeldItemRenderer renderArmHoldingItem (Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IFFLnet/minecraft/util/Arm;)V
