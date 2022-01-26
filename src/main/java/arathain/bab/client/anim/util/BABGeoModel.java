@@ -1,6 +1,5 @@
 package arathain.bab.client.anim.util;
 
-import com.eliotlash.molang.MolangParser;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +9,7 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
-import software.bernie.geckolib3.resource.GeckoLibCache;
+import com.eliotlash.molang.MolangParser;
 
 import java.util.Collections;
 
@@ -26,6 +25,8 @@ public abstract class BABGeoModel <T extends IAnimatable & IAnimationTickable> e
         IBone bone = this.getBone(boneName);
         return (BABBone) bone;
     }
+    //TODO For now
+    public final MolangParser parser = new MolangParser();
 
     public boolean isInitialized() {
         return !this.getAnimationProcessor().getModelRendererList().isEmpty();
@@ -59,7 +60,8 @@ public abstract class BABGeoModel <T extends IAnimatable & IAnimationTickable> e
         getAnimationProcessor().preAnimationSetup(predicate.getAnimatable(), seekTime);
         if (!this.getAnimationProcessor().getModelRendererList().isEmpty()) {
             //TODO make this work
-            getAnimationProcessor().tickAnimation(entity, uniqueID, seekTime, predicate, GeckoLibCache.getInstance().parser, shouldCrashOnMissing);
+
+            getAnimationProcessor().tickAnimation(entity, uniqueID, seekTime, predicate, parser, shouldCrashOnMissing);
         }
 
         if (!MinecraftClient.getInstance().isPaused() || manager.shouldPlayWhilePaused) {
