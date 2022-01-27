@@ -4,6 +4,8 @@ import arathain.bab.BloodAndBone;
 import arathain.bab.client.anim.player.GeckoLibPlayer;
 import arathain.bab.client.anim.util.BABBone;
 import arathain.bab.client.anim.util.BABGeoModel;
+import arathain.bab.core.ability.AbilityHandler;
+import arathain.bab.core.component.AbilityComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -271,7 +273,7 @@ public class GeckoLibBipedModel extends BABGeoModel<GeckoLibPlayer> {
 
 
         //TODO CCA this shit asap
-        AbilityCapability.IAbilityCapability abilityCapability = AbilityHandler.INSTANCE.getAbilityCapability(entityIn);
+        AbilityComponent abilityCapability = AbilityHandler.INSTANCE.getAbilityComponent(entityIn);
         if (abilityCapability != null && abilityCapability.getActiveAbility() != null) {
             abilityCapability.codeAnimations(this, partialTick);
         }

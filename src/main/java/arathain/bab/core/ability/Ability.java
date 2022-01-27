@@ -4,11 +4,15 @@ import arathain.bab.client.anim.player.GeckoLibPlayer;
 import arathain.bab.client.anim.util.BABAnimationController;
 import arathain.bab.client.anim.util.BABGeoModel;
 import arathain.bab.core.ability.AbilitySection.*;
+import arathain.bab.core.component.AbilityComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +32,7 @@ public class Ability {
     private final int cooldownMax;
     private final AbilityType<? extends Ability> abilityType;
     private final LivingEntity user;
-    private final AbilityCapability.IAbilityCapability abilityCapability;
+    private final AbilityComponent abilityComponent;
 
     private int ticksInUse;
     private int ticksInSection;
@@ -62,7 +66,7 @@ public class Ability {
     public Ability(AbilityType<? extends Ability> abilityType, LivingEntity user, AbilitySection[] sectionTrack, int cooldownMax) {
         this.abilityType = abilityType;
         this.user = user;
-        this.abilityCapability = AbilityHandler.INSTANCE.getAbilityCapability(user);
+        this.abilityComponent = AbilityHandler.INSTANCE.getAbilityComponent(user);
         this.sectionTrack = sectionTrack;
         this.cooldownMax = cooldownMax;
         this.rand = new Random();
@@ -80,7 +84,7 @@ public class Ability {
     }
 
     public void start() {
-        if (!runsInBackground()) abilityCapability.setActiveAbility(this);
+        if (!runsInBackground()) abilityComponent.setActiveAbility(this);
         ticksInUse = 0;
         ticksInSection = 0;
         currentSectionIndex = 0;
@@ -88,7 +92,7 @@ public class Ability {
     }
 
     public void playAnimation(String animationName, GeckoLibPlayer.Perspective perspective, boolean shouldLoop) {
-        if (getUser() instanceof PlayerEntity && getUser().world.isRemote()) {
+        if (getUser() instanceof PlayerEntity && getUser().world.isClient()) {
             AnimationBuilder newActiveAnimation = new AnimationBuilder().addAnimation(animationName, shouldLoop);
             if (perspective == GeckoLibPlayer.Perspective.FIRST_PERSON) {
                 activeFirstPersonAnimation = newActiveAnimation;
@@ -145,7 +149,7 @@ public class Ability {
         isUsing = false;
         cooldownTimer = getMaxCooldown();
         currentSectionIndex = 0;
-        if (!runsInBackground()) abilityCapability.setActiveAbility(null);
+        if (!runsInBackground()) abilityComponent.setActiveAbility(null);
 
         if (getUser().world.isClient) {
             heldItemMainHandVisualOverride = null;
@@ -168,7 +172,7 @@ public class Ability {
      * @return Whether or not the ability can be used
      */
     public boolean canUse() {
-        boolean nonBackgroundCheck = runsInBackground() || abilityCapability.getActiveAbility() == null || canCancelActiveAbility();
+        boolean nonBackgroundCheck = runsInBackground() || abilityComponent.getActiveAbility() == null || canCancelActiveAbility();
         return (!isUsing() || canCancelActiveAbility()) && cooldownTimer == 0 && nonBackgroundCheck;
     }
 
@@ -275,9 +279,9 @@ public class Ability {
         return cooldownMax;
     }
 
-    //TODO replace with CCA
-    public AbilityCapability.IAbilityCapability getAbilityCapability() {
-        return abilityCapability;
+    //TODO make CCA component 100% functional
+    public AbilityComponent getAbilityComponent() {
+        return abilityComponent;
     }
 
     public <E extends IAnimatable> PlayState animationPredicate(AnimationEvent<E> e, GeckoLibPlayer.Perspective perspective) {
@@ -361,6 +365,7 @@ public class Ability {
     }
 
     // Events, this will need a restructuring
+    // might just have to use mixins here
 
     public void onRightClickWithItem(PlayerInteractEvent.RightClickItem event) {
 
@@ -414,7 +419,7 @@ public class Ability {
 
     }
 
-    public void onRenderTick(ClientTickEvents.EndTick event) {
+    public void onRenderTick(ClientTickEvents.StartTick event) {
 
     }
 }
