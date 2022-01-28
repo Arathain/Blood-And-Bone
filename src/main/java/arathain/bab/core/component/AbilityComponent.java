@@ -83,7 +83,7 @@ public class AbilityComponent implements AutoSyncedComponent, ServerTickingCompo
 
     @Override
     public AbilityType<?>[] getAbilityTypes() {
-        return new AbilityType[0];
+        return AbilityHandler.PLAYER_ABILITIES;
     }
 
     @Override

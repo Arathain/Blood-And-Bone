@@ -3,9 +3,12 @@ package arathain.bab.core.ability;
 import arathain.bab.core.ability.abilities.SimpleAnimationAbility;
 import arathain.bab.core.component.AbilityComponent;
 import arathain.bab.core.init.BABComponents;
+import arathain.bab.core.network.packet.PlayerUseAbilityPacket;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nullable;
 
@@ -66,7 +69,7 @@ public enum AbilityHandler {
         }
         AbilityComponent abilityCapability = getAbilityComponent(entity);
         if (abilityCapability != null) {
-            MowziesMobs.NETWORK.sendToServer(new MessagePlayerUseAbility(ArrayUtils.indexOf(abilityCapability.getAbilityTypesOnEntity(entity), ability)));
+            PlayerUseAbilityPacket.send(ArrayUtils.indexOf(abilityCapability.getAbilityTypes(), ability));
         }
     }
 }
